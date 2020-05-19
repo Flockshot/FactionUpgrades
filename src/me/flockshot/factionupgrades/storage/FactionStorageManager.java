@@ -105,7 +105,6 @@ public class FactionStorageManager
 				factions.remove(faction.getFactionID());
 			}
 		}
-		
 	}
 
 	private FactionStorage getFaction(String id) {
