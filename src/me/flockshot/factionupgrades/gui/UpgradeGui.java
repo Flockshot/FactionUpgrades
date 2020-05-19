@@ -17,6 +17,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.massivecraft.factions.FPlayer;
 import com.massivecraft.factions.FPlayers;
@@ -31,19 +32,20 @@ import me.flockshot.factionupgrades.utils.files.identifier.MessageIdentifier;
 
 public class UpgradeGui implements InventoryHolder, Listener
 {
-    private final Inventory inv;
+    //private Inventory inv;
+    private Map<String, UpgradeInventory> inventories = new HashMap<String, UpgradeInventory>();
     private FactionUpgradesPlugin plugin;
     private String identifier;
     private Map<Integer, UpgradeItem> upgradeItems = new HashMap<Integer, UpgradeItem>();
     private int rows;
     private String name;
     private final int slotPerRow = 9;
+    private final int clearTime = 1000*60*5;
 
     public UpgradeGui(String identifier, String name, int rows, Map<Integer, UpgradeItem> upgradeItems, FactionUpgradesPlugin plugin)
     {
         this.plugin = plugin;
 
-        inv = Bukkit.createInventory(this, rows*slotPerRow, ColorTranslator.getString(name));
         this.setIdentifier(identifier);
         
         setRows(rows);
@@ -51,36 +53,33 @@ public class UpgradeGui implements InventoryHolder, Listener
         
         setUpgradeItems(upgradeItems);
         
-        
-        
-        setItems();
+        startTimer();
     }
 
-    @Override
-    public Inventory getInventory() {
-        return inv;
-    }
-    
-    
-    private void setItems()
+    private void startTimer() 
     {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                clearUnUsedInventories();
+            }
+        }.runTaskTimerAsynchronously(plugin, 0L, clearTime);        
+    }
+
+
+
+    private void setItems(UpgradeInventory upgradeInventory, FactionStorage faction, HumanEntity ent)
+    {
+        final Inventory inv = upgradeInventory.getInventory();
+        
         for(int index : getUpgradeItems().keySet())
         {
-            ItemStack item = getUpgradeItems().get(index).getItem();
-            inv.setItem(index, item);
-        }
-    }
-    
-    private void setItems(Inventory inv, FactionStorage faction, HumanEntity ent)
-    {
-        for(int index : getUpgradeItems().keySet())
-        {
-            UpgradeItem upItem = getUpgradeItems().get(index);   
+            final UpgradeItem upItem = getUpgradeItems().get(index);   
             ItemStack item;
             if(upItem.getUpgrade()!=null)
             {
-                FactionUpgrade upgrade = upItem.getUpgrade();
-                LevelInfo info = upgrade.getLevelInfo(faction.getUpgrade(upgrade.getIdentifier())+1);
+                final FactionUpgrade upgrade = upItem.getUpgrade();
+                final LevelInfo info = upgrade.getLevelInfo(faction.getUpgrade(upgrade.getIdentifier())+1);
                 upItem.setCost(info.getCost());
                 
                 item = ColorTranslator.getTranslatedItem(upItem.getItem().clone(), info);
@@ -101,21 +100,39 @@ public class UpgradeGui implements InventoryHolder, Listener
 
             inv.setItem(index, item);
         }
+        upgradeInventory.setLastUsed(System.currentTimeMillis());
     }
     
     // You can open the inventory with this
     public void openInventory(final HumanEntity ent, Faction faction)
     {        
-        FactionStorage factionStorage = plugin.getFactionManager().getFactionFully(faction.getId());
+        final FactionStorage factionStorage = plugin.getFactionManager().getFactionFully(faction.getId());
         if(factionStorage!=null)
         {
-            Inventory inv = Bukkit.createInventory(this, getRows()*slotPerRow, ColorTranslator.getString(getName()));
-            setItems(inv, factionStorage, ent);
+            final UpgradeInventory upgradeInventory = getInventoryOrCreateNew(faction.getId());
             
-            ent.openInventory(inv);
+            setItems(upgradeInventory, factionStorage, ent);
+            ent.openInventory(upgradeInventory.getInventory());
         }       
     }
 
+    private UpgradeInventory getInventoryOrCreateNew(String id)
+    {
+        if(getInventory(id)!=null)
+            return getInventory(id);
+        
+        return createInventory(id);        
+    }
+
+    
+    public UpgradeInventory createInventory(String id)
+    {        
+        final UpgradeInventory inventory = new UpgradeInventory(Bukkit.createInventory(this, getRows()*slotPerRow, ColorTranslator.getString(getName())), id);
+        
+        inventories.put(id, inventory);
+        return inventory;
+    }
+    
     // Check for clicks on items    
     @EventHandler
     public void onDrag(final InventoryDragEvent event)
@@ -159,12 +176,12 @@ public class UpgradeGui implements InventoryHolder, Listener
         final Player player = (Player) event.getWhoClicked();
         final int slot = event.getRawSlot();
         
-        UpgradeItem upgradeItem = getUpgradeItems().get((int) slot);
+        final UpgradeItem upgradeItem = getUpgradeItems().get((int) slot);
         
         if(upgradeItem.getUpgrade()==null) return;
         
-        FPlayer fPlayer = FPlayers.getInstance().getByPlayer(player);
-        FactionStorage faction = plugin.getFactionManager().getFactionFully(fPlayer.getFactionId());
+        final FPlayer fPlayer = FPlayers.getInstance().getByPlayer(player);
+        final FactionStorage faction = plugin.getFactionManager().getFactionFully(fPlayer.getFactionId());
         
         if(faction!=null)
         {
@@ -179,7 +196,7 @@ public class UpgradeGui implements InventoryHolder, Listener
                     faction.upgradeLevel(upgradeItem.getUpgrade().getIdentifier());
                     upgradeItem.getUpgrade().onFactionUpgrade(faction);
                     
-                    setItems(event.getClickedInventory(), faction, player);
+                    setItems(getInventoryOrCreateNew(faction.getFactionID()), faction, player);
                 }
                 else
                     plugin.getLanguageHandler().getLangFile().sendMessage(player, MessageIdentifier.NO_MONEY);
@@ -190,6 +207,22 @@ public class UpgradeGui implements InventoryHolder, Listener
         else
             plugin.getLanguageHandler().getLangFile().sendMessage(player, MessageIdentifier.NO_FACTION);
 
+    }
+    
+    
+    
+    public void clearUnUsedInventories()
+    {
+        for(UpgradeInventory upgradeInventory : getInventories().values())
+            if((System.currentTimeMillis()-upgradeInventory.getLastUsed()) >= clearTime)
+                    getInventories().remove(upgradeInventory.getId());
+    }
+    
+    
+    
+    @Override
+    public Inventory getInventory() {
+        return null;
     }
 
     public Map<Integer, UpgradeItem> getUpgradeItems() {
@@ -222,6 +255,17 @@ public class UpgradeGui implements InventoryHolder, Listener
 
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
+    }
+
+    private UpgradeInventory getInventory(String id) {
+        return getInventories().get(id);
+    }
+    public Map<String, UpgradeInventory> getInventories() {
+        return inventories;
+    }
+
+    public void setInventories(Map<String, UpgradeInventory> inventories) {
+        this.inventories = inventories;
     }
 
 }
