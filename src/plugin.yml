@@ -1,0 +1,13 @@
+main: me.flockshot.factionupgrades.FactionUpgradesPlugin
+name: FactionUpgrades
+description: Faction Upgrades
+version: 1.0
+authors: [Flockshot]
+depend: [Vault, Factions, KOTH]
+commands:
+  facupgrade:
+    description: main command.
+
+permissions:
+  facupgrades.admin.reload:
+    description: reload perm
