@@ -54,8 +54,8 @@ public class FactionUpgradesPlugin extends JavaPlugin implements Listener
 		
 		getConfig().options().copyDefaults(true);		
         saveConfig();
-		
-	    //setConfigHandler(new ConfigHandler(this));
+	    
+        //setConfigHandler(new ConfigHandler(this));
 	    setLanguageHandler(new LanguageHandler(this, Language.EN));	    
         
 	    if(!running)
