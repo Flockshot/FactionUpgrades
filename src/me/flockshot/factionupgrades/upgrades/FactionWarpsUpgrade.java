@@ -18,48 +18,48 @@ import me.flockshot.factionupgrades.utils.files.identifier.MessageIdentifier;
 
 public class FactionWarpsUpgrade extends UnknownFactionUpgrade
 {
-	
-	@Override
-	public String getIdentifier() {
-		return "faction-warps";
-	}
+    
+    @Override
+    public String getIdentifier() {
+        return "faction-warps";
+    }
 
-	@Override
-	public FactionUpgradeType getUpgradeType() {
-		return FactionUpgradeType.FACTION_WARPS;
-	}
+    @Override
+    public FactionUpgradeType getUpgradeType() {
+        return FactionUpgradeType.FACTION_WARPS;
+    }
 
-	public FactionWarpsUpgrade(FactionUpgradesPlugin plugin, TreeMap<Integer, LevelInfo> upgrades) {
-		super(plugin, upgrades);
-	}
+    public FactionWarpsUpgrade(FactionUpgradesPlugin plugin, TreeMap<Integer, LevelInfo> upgrades) {
+        super(plugin, upgrades);
+    }
 
-	@Override
-	public void onFactionUpgrade(FactionStorage factionStorage)	{
-		runUpgradeMessage(factionStorage, Factions.getInstance().getFactionById(factionStorage.getFactionID()));
-	}
-	
-	@EventHandler
-	public void onSetWarpCommand(PlayerCommandPreprocessEvent event)
-	{
-		final FPlayer player = FPlayers.getInstance().getByPlayer(event.getPlayer());
-		if(player.hasFaction())
-		{
-			final String cmd = event.getMessage().toLowerCase();
-			if(cmd.startsWith("/factions setwarp") || cmd.startsWith("/f setwarp") || cmd.startsWith("/factions sw") || cmd.startsWith("/f sw"))
-			{
-				final FactionStorage factionStorage = getPlugin().getFactionManager().getFactionFully(player.getFactionId());
-				final int level = factionStorage.getUpgrade(getIdentifier());
+    @Override
+    public void onFactionUpgrade(FactionStorage factionStorage)    {
+        runUpgradeMessage(factionStorage, Factions.getInstance().getFactionById(factionStorage.getFactionID()));
+    }
+    
+    @EventHandler
+    public void onSetWarpCommand(PlayerCommandPreprocessEvent event)
+    {
+        final FPlayer player = FPlayers.getInstance().getByPlayer(event.getPlayer());
+        if(player.hasFaction())
+        {
+            final String cmd = event.getMessage().toLowerCase();
+            if(cmd.startsWith("/factions setwarp") || cmd.startsWith("/f setwarp") || cmd.startsWith("/factions sw") || cmd.startsWith("/f sw"))
+            {
+                final FactionStorage factionStorage = getPlugin().getFactionManager().getFactionFully(player.getFactionId());
+                final int level = factionStorage.getUpgrade(getIdentifier());
 
-				if(player.getFaction().getWarps().size()>=getLevelInfo(level).getValue())
-				{
-					event.setCancelled(true);
-					getPlugin().getLanguageHandler().getLangFile().sendMessage(event.getPlayer(), MessageIdentifier.WARP_LIMIT);
-				}
-				
-			}
-		}
+                if(player.getFaction().getWarps().size()>=getLevelInfo(level).getValue())
+                {
+                    event.setCancelled(true);
+                    getPlugin().getLanguageHandler().getLangFile().sendMessage(event.getPlayer(), MessageIdentifier.WARP_LIMIT);
+                }
+                
+            }
+        }
 
-	}
+    }
 
 
 }

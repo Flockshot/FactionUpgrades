@@ -4,7 +4,7 @@ import java.io.File;
 
 public interface FlockFile extends FlockConfig
 {
-	public void setFile(File file);
-	public File getFile();
+    public void setFile(File file);
+    public File getFile();
 
 }

@@ -9,14 +9,14 @@ import javax.script.ScriptException;
 
 public class NumberUtility
 {
-	public static boolean isNum(String str)
-	{
-	    NumberFormat formatter = NumberFormat.getInstance();
-	    ParsePosition pos = new ParsePosition(0);
-	    formatter.parse(str, pos);
-	    return str.length() == pos.getIndex();
-	}
-	   
+    public static boolean isNum(String str)
+    {
+        NumberFormat formatter = NumberFormat.getInstance();
+        ParsePosition pos = new ParsePosition(0);
+        formatter.parse(str, pos);
+        return str.length() == pos.getIndex();
+    }
+       
     public boolean isNumMath(String str)
     {
         str = str.replaceAll("+", "");

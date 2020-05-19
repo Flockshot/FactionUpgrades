@@ -22,48 +22,48 @@ import me.flockshot.factionupgrades.upgrademanager.UnknownFactionUpgrade;
 
 public class DamageDecreaseUpgrade extends UnknownFactionUpgrade
 {
-	
-	@Override
-	public String getIdentifier() {
-		return "damage-decrease";
-	}
+    
+    @Override
+    public String getIdentifier() {
+        return "damage-decrease";
+    }
 
-	@Override
-	public FactionUpgradeType getUpgradeType() {
-		return FactionUpgradeType.DAMAGE_DECREASE;
-	}
+    @Override
+    public FactionUpgradeType getUpgradeType() {
+        return FactionUpgradeType.DAMAGE_DECREASE;
+    }
 
-	public DamageDecreaseUpgrade(FactionUpgradesPlugin plugin, TreeMap<Integer, LevelInfo> upgrades) {
-		super(plugin, upgrades);
-	}
+    public DamageDecreaseUpgrade(FactionUpgradesPlugin plugin, TreeMap<Integer, LevelInfo> upgrades) {
+        super(plugin, upgrades);
+    }
 
 
-	@Override
-	public void onFactionUpgrade(FactionStorage factionStorage) {
-		runUpgradeMessage(factionStorage, Factions.getInstance().getFactionById(factionStorage.getFactionID()));
-	}
-	
-	@EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
-	public void onDamage(EntityDamageByEntityEvent event)
-	{
-		if(event.getEntity() instanceof Player && event.getDamager() instanceof Player)
-		{
-			final Player victim = (Player) event.getEntity();			
-			final FPlayer player = FPlayers.getInstance().getByPlayer(victim);
-			
-			if(player.hasFaction())
-			{
-				Faction chunkFaction = Board.getInstance().getFactionAt((new FLocation(victim.getLocation())));
-				
-				if(chunkFaction.getId().equals(player.getFaction().getId()))
-				{
-					final FactionStorage factionStorage = getPlugin().getFactionManager().getFactionFully(player.getFactionId());
-					
-					event.setDamage(event.getDamage()*getLevelInfo(factionStorage.getUpgrade(getIdentifier())).getValue());
-				}
-			}
-		}
-	}
+    @Override
+    public void onFactionUpgrade(FactionStorage factionStorage) {
+        runUpgradeMessage(factionStorage, Factions.getInstance().getFactionById(factionStorage.getFactionID()));
+    }
+    
+    @EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
+    public void onDamage(EntityDamageByEntityEvent event)
+    {
+        if(event.getEntity() instanceof Player && event.getDamager() instanceof Player)
+        {
+            final Player victim = (Player) event.getEntity();            
+            final FPlayer player = FPlayers.getInstance().getByPlayer(victim);
+            
+            if(player.hasFaction())
+            {
+                Faction chunkFaction = Board.getInstance().getFactionAt((new FLocation(victim.getLocation())));
+                
+                if(chunkFaction.getId().equals(player.getFaction().getId()))
+                {
+                    final FactionStorage factionStorage = getPlugin().getFactionManager().getFactionFully(player.getFactionId());
+                    
+                    event.setDamage(event.getDamage()*getLevelInfo(factionStorage.getUpgrade(getIdentifier())).getValue());
+                }
+            }
+        }
+    }
 
 
 }

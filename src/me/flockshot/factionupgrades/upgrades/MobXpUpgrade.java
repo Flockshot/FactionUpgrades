@@ -19,41 +19,41 @@ import me.flockshot.factionupgrades.upgrademanager.UnknownFactionUpgrade;
 
 public class MobXpUpgrade extends UnknownFactionUpgrade
 {
-	@Override
-	public String getIdentifier() {
-		return "mob-xp";
-	}
+    @Override
+    public String getIdentifier() {
+        return "mob-xp";
+    }
 
-	@Override
-	public FactionUpgradeType getUpgradeType() {
-		return FactionUpgradeType.MOB_XP;
-	}
+    @Override
+    public FactionUpgradeType getUpgradeType() {
+        return FactionUpgradeType.MOB_XP;
+    }
 
-	public MobXpUpgrade(FactionUpgradesPlugin plugin, TreeMap<Integer, LevelInfo> upgrades) {
-		super(plugin, upgrades);
-	}
+    public MobXpUpgrade(FactionUpgradesPlugin plugin, TreeMap<Integer, LevelInfo> upgrades) {
+        super(plugin, upgrades);
+    }
 
-	@Override
-	public void onFactionUpgrade(FactionStorage factionStorage)	{
-		runUpgradeMessage(factionStorage, Factions.getInstance().getFactionById(factionStorage.getFactionID()));
-	}
-	
-	
-	@EventHandler
-	public void onMobKill(EntityDeathEvent event)
-	{
-		if(!(event.getEntity() instanceof Player))
-		{
-			final Faction faction = Board.getInstance().getFactionAt(new FLocation(event.getEntity().getLocation()));
-			final FactionStorage storage = getPlugin().getFactionManager().getFactionFully(faction.getId());
-			
-			if(storage!=null)
-				if(storage.getUpgrade(getIdentifier())>0)
-					event.setDroppedExp(event.getDroppedExp() * (int) getPlugin().getUpgradeManager().getUpgrade(getIdentifier()).getLevelInfo(storage.getUpgrade(getIdentifier())).getValue());
-			
-			
-		}
-	}
+    @Override
+    public void onFactionUpgrade(FactionStorage factionStorage)    {
+        runUpgradeMessage(factionStorage, Factions.getInstance().getFactionById(factionStorage.getFactionID()));
+    }
+    
+    
+    @EventHandler
+    public void onMobKill(EntityDeathEvent event)
+    {
+        if(!(event.getEntity() instanceof Player))
+        {
+            final Faction faction = Board.getInstance().getFactionAt(new FLocation(event.getEntity().getLocation()));
+            final FactionStorage storage = getPlugin().getFactionManager().getFactionFully(faction.getId());
+            
+            if(storage!=null)
+                if(storage.getUpgrade(getIdentifier())>0)
+                    event.setDroppedExp(event.getDroppedExp() * (int) getPlugin().getUpgradeManager().getUpgrade(getIdentifier()).getLevelInfo(storage.getUpgrade(getIdentifier())).getValue());
+            
+            
+        }
+    }
 
 
 

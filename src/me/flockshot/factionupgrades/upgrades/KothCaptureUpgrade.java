@@ -21,56 +21,56 @@ import me.flockshot.factionupgrades.upgrademanager.UnknownFactionUpgrade;
 
 public class KothCaptureUpgrade extends UnknownFactionUpgrade implements StartupRunnable
 {
-	final int timerDelay = 20;
-	
-	@Override
-	public String getIdentifier() {
-		return "koth-capture";
-	}
+    final int timerDelay = 20;
+    
+    @Override
+    public String getIdentifier() {
+        return "koth-capture";
+    }
 
-	@Override
-	public FactionUpgradeType getUpgradeType() {
-		return FactionUpgradeType.KOTH_CAPTURE;
-	}
-	
-	public KothCaptureUpgrade(FactionUpgradesPlugin plugin, TreeMap<Integer, LevelInfo> upgrades) {
-		super(plugin, upgrades);
-	}
+    @Override
+    public FactionUpgradeType getUpgradeType() {
+        return FactionUpgradeType.KOTH_CAPTURE;
+    }
+    
+    public KothCaptureUpgrade(FactionUpgradesPlugin plugin, TreeMap<Integer, LevelInfo> upgrades) {
+        super(plugin, upgrades);
+    }
 
-	@Override
-	public void runTimer()
-	{
-		new BukkitRunnable()
+    @Override
+    public void runTimer()
+    {
+        new BukkitRunnable()
         {
-			KOTHManager man = new KOTHManager(Main.instance);
-        	@Override
+            KOTHManager man = new KOTHManager(Main.instance);
+            @Override
             public void run()
             {
-        		for(KOTH koth : man.getActiveKOTHs())
-        		{
-        			Player capper = koth.getPlayerCapper();
-        			if(capper!=null)
-        			{
-        				if(FPlayers.getInstance().getByPlayer(capper).hasFaction())
-        				{
-        					final Faction fac = FPlayers.getInstance().getByPlayer(capper).getFaction();
-        					final FactionStorage factionStorage = getPlugin().getFactionManager().getFactionFully(fac.getId());
-        					
-        					if(factionStorage != null)
-        						if(koth.getTimeRemainingAsInt()<=getLevelInfo(factionStorage.getUpgrade(getIdentifier())).getValue())
-        							koth.successful();
+                for(KOTH koth : man.getActiveKOTHs())
+                {
+                    Player capper = koth.getPlayerCapper();
+                    if(capper!=null)
+                    {
+                        if(FPlayers.getInstance().getByPlayer(capper).hasFaction())
+                        {
+                            final Faction fac = FPlayers.getInstance().getByPlayer(capper).getFaction();
+                            final FactionStorage factionStorage = getPlugin().getFactionManager().getFactionFully(fac.getId());
+                            
+                            if(factionStorage != null)
+                                if(koth.getTimeRemainingAsInt()<=getLevelInfo(factionStorage.getUpgrade(getIdentifier())).getValue())
+                                    koth.successful();
 
-        				}
-        			}
-        		}
+                        }
+                    }
+                }
             }
         }.runTaskTimer(getPlugin(), 0L, timerDelay);
-	}
-	
-	@Override
-	public void onFactionUpgrade(FactionStorage factionStorage) {
-		runUpgradeMessage(factionStorage, Factions.getInstance().getFactionById(factionStorage.getFactionID()));
-	}
+    }
+    
+    @Override
+    public void onFactionUpgrade(FactionStorage factionStorage) {
+        runUpgradeMessage(factionStorage, Factions.getInstance().getFactionById(factionStorage.getFactionID()));
+    }
 
 
 

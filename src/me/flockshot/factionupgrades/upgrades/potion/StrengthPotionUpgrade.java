@@ -10,24 +10,24 @@ import me.flockshot.factionupgrades.upgrademanager.LevelInfo;
 
 public class StrengthPotionUpgrade extends UnknownPotionUpgrade
 {
-	
-	@Override
-	public String getIdentifier() {
-		return "strength-potion";
-	}
+    
+    @Override
+    public String getIdentifier() {
+        return "strength-potion";
+    }
 
-	@Override
-	public FactionUpgradeType getUpgradeType() {
-		return FactionUpgradeType.STRENGTH_POTION;
-	}
-	
-	public PotionEffectType getPotionType()	{
-		return PotionEffectType.INCREASE_DAMAGE;
-	}
+    @Override
+    public FactionUpgradeType getUpgradeType() {
+        return FactionUpgradeType.STRENGTH_POTION;
+    }
+    
+    public PotionEffectType getPotionType()    {
+        return PotionEffectType.INCREASE_DAMAGE;
+    }
 
-	public StrengthPotionUpgrade(FactionUpgradesPlugin plugin, TreeMap<Integer, LevelInfo> upgrades) {
-		super(plugin, upgrades);
-	}
+    public StrengthPotionUpgrade(FactionUpgradesPlugin plugin, TreeMap<Integer, LevelInfo> upgrades) {
+        super(plugin, upgrades);
+    }
 
 
 }

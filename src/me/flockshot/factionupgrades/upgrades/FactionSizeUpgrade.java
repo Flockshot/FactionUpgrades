@@ -17,39 +17,39 @@ import me.flockshot.factionupgrades.utils.files.identifier.MessageIdentifier;
 
 public class FactionSizeUpgrade extends UnknownFactionUpgrade
 {
-	@Override
-	public String getIdentifier() {
-		return "faction-size";
-	}
+    @Override
+    public String getIdentifier() {
+        return "faction-size";
+    }
 
-	@Override
-	public FactionUpgradeType getUpgradeType() {
-		return FactionUpgradeType.FACTION_SIZE;
-	}
+    @Override
+    public FactionUpgradeType getUpgradeType() {
+        return FactionUpgradeType.FACTION_SIZE;
+    }
 
-	public FactionSizeUpgrade(FactionUpgradesPlugin plugin, TreeMap<Integer, LevelInfo> upgrades) {
-		super(plugin, upgrades);
-	}
+    public FactionSizeUpgrade(FactionUpgradesPlugin plugin, TreeMap<Integer, LevelInfo> upgrades) {
+        super(plugin, upgrades);
+    }
 
-	@Override
-	public void onFactionUpgrade(FactionStorage factionStorage)	{
-		runUpgradeMessage(factionStorage, Factions.getInstance().getFactionById(factionStorage.getFactionID()));
-	}
-		
-	
-	@EventHandler(ignoreCancelled=true, priority=EventPriority.LOWEST)
-	public void onFactionJoin(FPlayerJoinEvent event)
-	{
-		final FactionStorage factionStorage = getPlugin().getFactionManager().getFactionFully(event.getFaction().getId());
-		if(factionStorage != null)
-		{
-			final double value = getLevelInfo(factionStorage.getUpgrade(getIdentifier())).getValue();
-			
-			if(event.getFaction().getSize()>=value)
-			{
-				event.setCancelled(true);
-				getPlugin().getLanguageHandler().getLangFile().sendMessage(event.getfPlayer().getPlayer(), MessageIdentifier.PLAYER_LIMIT);
-			}		
-		}
-	}
+    @Override
+    public void onFactionUpgrade(FactionStorage factionStorage)    {
+        runUpgradeMessage(factionStorage, Factions.getInstance().getFactionById(factionStorage.getFactionID()));
+    }
+        
+    
+    @EventHandler(ignoreCancelled=true, priority=EventPriority.LOWEST)
+    public void onFactionJoin(FPlayerJoinEvent event)
+    {
+        final FactionStorage factionStorage = getPlugin().getFactionManager().getFactionFully(event.getFaction().getId());
+        if(factionStorage != null)
+        {
+            final double value = getLevelInfo(factionStorage.getUpgrade(getIdentifier())).getValue();
+            
+            if(event.getFaction().getSize()>=value)
+            {
+                event.setCancelled(true);
+                getPlugin().getLanguageHandler().getLangFile().sendMessage(event.getfPlayer().getPlayer(), MessageIdentifier.PLAYER_LIMIT);
+            }        
+        }
+    }
 }

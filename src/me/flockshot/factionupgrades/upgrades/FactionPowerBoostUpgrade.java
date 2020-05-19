@@ -13,28 +13,28 @@ import me.flockshot.factionupgrades.upgrademanager.UnknownFactionUpgrade;
 
 public class FactionPowerBoostUpgrade extends UnknownFactionUpgrade
 {
-	@Override
-	public String getIdentifier() {
-		return "faction-powerboost";
-	}
+    @Override
+    public String getIdentifier() {
+        return "faction-powerboost";
+    }
 
-	@Override
-	public FactionUpgradeType getUpgradeType() {
-		return FactionUpgradeType.FACTION_POWERBOOST;
-	}
+    @Override
+    public FactionUpgradeType getUpgradeType() {
+        return FactionUpgradeType.FACTION_POWERBOOST;
+    }
 
-	public FactionPowerBoostUpgrade(FactionUpgradesPlugin plugin, TreeMap<Integer, LevelInfo> upgrades) {
-		super(plugin, upgrades);
-	}
+    public FactionPowerBoostUpgrade(FactionUpgradesPlugin plugin, TreeMap<Integer, LevelInfo> upgrades) {
+        super(plugin, upgrades);
+    }
 
-	@Override
-	public void onFactionUpgrade(FactionStorage factionStorage)
-	{
-		final Faction faction = Factions.getInstance().getFactionById(factionStorage.getFactionID());
-		runUpgradeMessage(factionStorage, faction);
+    @Override
+    public void onFactionUpgrade(FactionStorage factionStorage)
+    {
+        final Faction faction = Factions.getInstance().getFactionById(factionStorage.getFactionID());
+        runUpgradeMessage(factionStorage, faction);
 
-		faction.setPowerBoost(getLevelInfo(factionStorage.getUpgrade(getIdentifier())).getValue());
-	}
-	
+        faction.setPowerBoost(getLevelInfo(factionStorage.getUpgrade(getIdentifier())).getValue());
+    }
+    
 
 }
