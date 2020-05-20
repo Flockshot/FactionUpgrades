@@ -1,6 +1,7 @@
 package me.flockshot.factionupgrades.gui;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -212,10 +213,16 @@ public class UpgradeGui implements InventoryHolder, Listener
     
     
     public void clearUnUsedInventories()
-    {
-        for(UpgradeInventory upgradeInventory : getInventories().values())
-            if((System.currentTimeMillis()-upgradeInventory.getLastUsed()) >= clearTime)
-                    getInventories().remove(upgradeInventory.getId());
+    {        
+        Iterator<UpgradeInventory> it = getInventories().values().iterator();
+        
+        while(it.hasNext())
+        {
+            UpgradeInventory upgradeInv = it.next();
+            if((System.currentTimeMillis()-upgradeInv.getLastUsed()) >= clearTime)
+                inventories.remove(upgradeInv.getId());
+        }
+
     }
     
     
